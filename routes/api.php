@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('register',[ClientAuthController::class,'register']);
 Route::post('admin/login',[AdminAuthController::class,'login']);
 
-Route::middleware('auth:admin-api')->prefix('admin')->group(function(){
+Route::middleware(['auth:admin-api','change_lang'])->prefix('admin')->group(function(){
     Route::resource('category', CategoryController::class);
     Route::resource('suppliers',SuppliersController::class);
 });

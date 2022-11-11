@@ -4,7 +4,7 @@ use App\Http\Controllers\SuppliersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('client')->group(function(){
+Route::prefix('client')->middleware('change_lang')->group(function(){
     Route::post('login',[ClientAuthController::class,'login']);
 });
 

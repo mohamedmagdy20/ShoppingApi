@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Supplier;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -86,6 +87,17 @@ class SuppliersController extends Controller
     public function show($id)
     {
         //
+        try{
+            $supplier  =Supplier::find($id);
+        }catch(Exception $e)
+        {
+            return response()->json(['msg'=>'Data Not Found'],404);
+        }
+        return response()->json([
+            'msg'=>'success',
+            'state'=>true,
+            'data'=>$supplier
+        ]);
     }
 
     /**
@@ -109,6 +121,63 @@ class SuppliersController extends Controller
     public function update(Request $request, $id)
     {
         //
+        try{
+            $supplier  =Supplier::find($id);
+        }catch(Exception $e)
+        {
+            return response()->json(['msg'=>'Data Not Found'],404);
+        }
+        $rules = [
+            'name'=>'required',
+        ];
+
+        $validator = Validator::make($request->all(),$rules);
+
+        if($validator->failed())
+        {
+            return response()->json([
+                'error'=>$validator->errors()
+            ],401);
+        }
+        if($request->hasFile('sup_img'))
+        {
+            $validate_image = Validator::make($request->all(),[
+                'sup_img'=>['image']
+            ]);
+            
+            if($validate_image->fails())
+            {
+              return response()->json(['error'=>$validator->errors()],401);
+            }
+
+            $file_path = public_path().'images/suppliers'.$supplier->img;
+            unlink($file_path);
+            $imgName = time().$request->file('sup_name')->getClientOriginalName();
+            $request->file('sup_img')->move(public_path('images/clients'),$imgName);
+
+            if($supplier->update(array_merge($validator->validated(),[
+                'sup_img'=>$imgName
+            ])))
+            {
+                return response()->json([
+                    'msg'=>'Updated Successfully',
+                    'state'=>true
+                ]);
+            }
+        }
+
+        if($supplier->update($validator->validated()))
+        {
+            return response()->json([
+                'msg'=>'Updated Successfully',
+                'state'=>true
+            ]);
+        }
+        else{
+            return response()->json([
+                'message'=>'error occur'
+            ],400);
+        }
     }
 
     /**
@@ -119,6 +188,20 @@ class SuppliersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $supplier  =Supplier::find($id);
+        }catch(Exception $e)
+        {
+            return response()->json(['msg'=>'Data Not Found'],404);
+        }
+        $file_path = public_path().'images/suppliers'.$supplier->img;
+        unlink($file_path);
+        if($supplier->delete())
+        {
+            return response()->json([
+                'msg'=>'deleted',
+                'state'=>true
+            ]);
+        } 
     }
 }

@@ -13,7 +13,7 @@ class CategoryController extends Controller
     //
     public function index()
     {
-        $category = Category::all();
+        $category = Category::select('name_'.app()->getLocale())->get();
         return response()->json([
             'data'=>$category,
         ]);
@@ -22,7 +22,8 @@ class CategoryController extends Controller
     public function create(Request $request)
     {
         $rule = [
-            'name'=>'required'
+            'name_en'=>'required',
+            'name_ar'=>'required'
         ];
 
         // $validate =  ($request->all(),$rule);
@@ -46,7 +47,8 @@ class CategoryController extends Controller
         }
         
         $rule = [
-            'name'=>'required'
+            'name_en'=>'required',
+            'name_ar'=>'required'
         ];
 
         // $validate =  ($request->all(),$rule);
