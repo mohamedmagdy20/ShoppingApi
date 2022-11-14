@@ -33,6 +33,32 @@ class CategoryController extends Controller
         {
             return response()->json(['error'=>$validate->errors()]);
         }
+        if($request->hasFile('cat_img'))
+        {
+            $validate_img = Validator::make($request->all(),[
+                'cat_img'=>['image']
+            ]);
+
+            if($validate_image->fails())
+            {
+              return response()->json(['error'=>$validator->errors()],401);
+            }
+            $imgName = time().$request->file('cat_img')->getClientOriginalName();
+            $request->file('cat_img')->move(public_path('images/categories'),$imgName);
+
+            if(Category::create(array_merge($validator->validated(),[
+                'img'=>$imgName])))
+            {
+                return response()->json([
+                    'msg'=>'Category Stored',
+                    'state'=>true,
+                ]);
+            }
+        }else{
+            return response()->json([
+                'message'=>'error occure'
+            ],400);
+        }
     }
 
     public function update(Request $request)
