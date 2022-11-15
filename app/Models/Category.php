@@ -13,4 +13,9 @@ class Category extends Model
         'name'
     ];
     protected $gaurded = [];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

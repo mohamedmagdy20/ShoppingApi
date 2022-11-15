@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\api\ClientAuthController;
 use App\Http\Controllers\api\SuppliersController;
+use App\Http\Controllers\api\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,5 +30,6 @@ Route::middleware(['auth:admin-api','change_lang'])->prefix('admin')->group(func
     Route::resource('category', CategoryController::class);
     Route::resource('suppliers',SuppliersController::class);
 });
-
+Route::get('products/index',[ProductController::class,'index']);
+Route::post('products/store',[ProductController::class,'create']);
 require __DIR__ . '/client.php';
