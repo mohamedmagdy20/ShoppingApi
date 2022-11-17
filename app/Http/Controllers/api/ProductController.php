@@ -55,14 +55,14 @@ class ProductController extends Controller
         }
         if($request->hasFile('prod_img'))
         {
-            $validate_img = Validator::make($request->all(),[
-                'prod_img'=>['image']
-            ]);
+            // $validate_img = Validator::make($request->all(),[
+            //     'prod_img'=>['image']
+            // ]);
 
-            if($validate_img->fails())
-            {
-              return response()->json(['error'=>$validate_img->errors()],401);
-            }
+            // if($validate_img->fails())
+            // {
+            //   return response()->json(['error'=>$validate_img->errors()],401);
+            // }
 
             $images = $request->file('prod_img');
             $product = new Product();
@@ -79,14 +79,14 @@ class ProductController extends Controller
             $product->categories_id = $request->categories_id;
             $product->suppliers_id = $request->suppliers_id;
             $product->save();
-            
+
             foreach($images as $img)
             {
                 $image = new Images(); 
           
                 // return $img->file;
-                $imgName = time().img->getClientOriginalName();
-                img->move(public_path('images/products'),$imgName);
+                $imgName = time().$img->getClientOriginalName();
+                $img->move(public_path('images/products'),$imgName);
 
                 $image->img = $imgName; 
                 $image->product_id = $product->id;
