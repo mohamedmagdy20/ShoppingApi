@@ -45,7 +45,6 @@ class ProductController extends Controller
             'price_out'=>'required|numeric',
             'description_en'=>'required',
             'description_ar'=>'required',
-
             'stock'=>"required|numeric"
         ];
         $validate = Validator::make($request->all(),$rules);
@@ -62,11 +61,10 @@ class ProductController extends Controller
 
             if($validate_img->fails())
             {
-              return response()->json(['error'=>$validator->errors()],401);
+              return response()->json(['error'=>$validate_img->errors()],401);
             }
 
-            $images = $request->files->all();
-            // return $images[0];
+            $images = $request->file('prod_img');
             $product = new Product();
 
             $product->name_en = $request->name_en;
@@ -82,27 +80,18 @@ class ProductController extends Controller
             $product->suppliers_id = $request->suppliers_id;
             $product->save();
             
-            $image = new Images(); 
-            for($i = 0 ; $i<=count($images); $i++)
+            foreach($images as $img)
             {
-                $im = $images[$i]; 
-                $imgName = time().$im->getClientOriginalName();
-                $im->move(public_path('images/products'),$imgName);
+                $image = new Images(); 
+          
+                // return $img->file;
+                $imgName = time().img->getClientOriginalName();
+                img->move(public_path('images/products'),$imgName);
 
                 $image->img = $imgName; 
                 $image->product_id = $product->id;
                 $image->save(); 
-            }   
-            // foreach($images as $img)
-            // {
-            //     return $img->file;
-            //     // $imgName = time().img->getClientOriginalName();
-            //     // img->move(public_path('images/products'),$imgName);
-
-            //     // $image->img = $imgName; 
-            //     // $image->product_id = $product->id;
-            //     // $image->save(); 
-            // }
+            }
              return response()->json([
                 'msg'=>'success',
                 'data'=>$image
@@ -111,6 +100,6 @@ class ProductController extends Controller
             return response()->json([
                 'message'=>'error occure'
             ],400);
-        }
+        }           
     }
 }

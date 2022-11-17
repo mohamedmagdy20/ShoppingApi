@@ -39,15 +39,15 @@ class CategoryController extends Controller
                 'cat_img'=>['image']
             ]);
 
-            if($validate_image->fails())
+            if($validate_img->fails())
             {
-              return response()->json(['error'=>$validator->errors()],401);
+              return response()->json(['error'=>$validate_img->errors()],401);
             }
             $imgName = time().$request->file('cat_img')->getClientOriginalName();
+            // return $imgName;
             $request->file('cat_img')->move(public_path('images/categories'),$imgName);
-
-            if(Category::create(array_merge($validator->validated(),[
-                'img'=>$imgName])))
+            $data = array_merge($validate->validated(),['img'=>$imgName]);
+            if(Category::create($data))
             {
                 return response()->json([
                     'msg'=>'Category Stored',

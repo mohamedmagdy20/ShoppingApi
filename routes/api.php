@@ -27,9 +27,11 @@ Route::post('register',[ClientAuthController::class,'register']);
 Route::post('admin/login',[AdminAuthController::class,'login']);
 
 Route::middleware(['auth:admin-api','change_lang'])->prefix('admin')->group(function(){
-    Route::resource('category', CategoryController::class);
     Route::resource('suppliers',SuppliersController::class);
 });
+// Route::resource('category', CategoryController::class);
+Route::post('category/create',[CategoryController::class,'create']);
+
 Route::get('products/index',[ProductController::class,'index']);
 Route::post('products/store',[ProductController::class,'create']);
 require __DIR__ . '/client.php';
