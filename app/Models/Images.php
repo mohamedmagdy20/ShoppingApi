@@ -9,8 +9,9 @@ use App\Model\Product;
 class Images extends Model
 {
     use HasFactory;
-    protected $tabel = 'images';
+    protected $table = 'images';
     protected $fillable = [
+        'id',
         'img','product_id'
     ];
     protected $gaurded = [];
