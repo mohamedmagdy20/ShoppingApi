@@ -192,7 +192,7 @@ class SuppliersController extends Controller
             $supplier  =Supplier::find($id);
         }catch(Exception $e)
         {
-            return response()->json(['msg'=>'Data Not Found'],404);
+            return response()->json(['msg'=>'Data Not Found'],400);
         }
         $file_path = public_path().'images/suppliers'.$supplier->img;
         unlink($file_path);

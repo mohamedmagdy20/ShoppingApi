@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Images;
 use Illuminate\Support\Facades\Validator;
+use Exception;
 class ProductController extends Controller
 {
     //
@@ -36,6 +37,25 @@ class ProductController extends Controller
         ], 200);
     }
 
+    public function show($id)
+    {
+        $product = Product::find($id);
+        if($product)
+        {
+            return response()->json([
+                'msg'=>'success',
+                'state'=>true,
+                'data'=>$product
+            ], 200);
+        }else{
+            return response()->json([
+                'msg'=>'data not found',
+                'state'=>false
+            ], 400);
+
+        }
+       
+    }
     public function create(Request $request)
     {
         $rules = [
@@ -55,14 +75,14 @@ class ProductController extends Controller
         }
         if($request->hasFile('prod_img'))
         {
-            // $validate_img = Validator::make($request->all(),[
-            //     'prod_img'=>['image']
-            // ]);
+            $validate_img = Validator::make($request->all(),[
+                'prod_img'=>['image']
+            ]);
 
-            // if($validate_img->fails())
-            // {
-            //   return response()->json(['error'=>$validate_img->errors()],401);
-            // }
+            if($validate_img->fails())
+            {
+              return response()->json(['error'=>$validate_img->errors()],401);
+            }
 
             $images = $request->file('prod_img');
             $product = new Product();
@@ -102,4 +122,117 @@ class ProductController extends Controller
             ],400);
         }           
     }
+
+    public function unlinkimage($path,$images)
+    {   
+        foreach($images as $image)
+        {
+            $filepath = public_path().$path.$image->img;
+            unlink($filepath);
+        }
+        return true;
+    }
+
+
+    public function delete(Request $request,$id)
+    {
+        $product = Product::findOrFail($id);
+        $images = Images::where('product_id',$id)->get();
+        if($product && $images)
+        {       
+            $path = '//images//products//';
+            $unlink = $this->unlinkimage($path,$images);
+            if($unlink)
+            {
+                $product->delete();
+                $images->delete();
+                 return response()->json([
+                    'msg'=>'product deleted',
+                    'state'=>true
+                 ], 200);
+            }else{
+                return response()->json([
+                    'message'=>'error occur'
+                ],400);
+            }
+        }else{
+            return response()->json([
+                'msg'=>'data not Found',
+                'state'=>false
+             ], 400);
+        }
+
+
+    }
+
+    public function update(Request $request)
+    {
+        $rules = [
+            'id'=>'required',
+            'name_en'=>'required',
+            'name_ar'=>'required',
+            'price_in'=>'required|numeric',
+            'price_out'=>'required|numeric',
+            'description_en'=>'required',
+            'description_ar'=>'required',
+            'stock'=>"required|numeric"
+        ];
+        $validate = Validator::make($request->all(),$rules);
+
+        if($validate->fails())
+        {
+            return response()->json(['error'=>$validate->errors()]);
+        }
+        $id = $request->id;
+        $product = Product::findOrFail($id);
+        $images = Images::where('product_id',$id)->get();
+        $path = '//images//products//';
+
+
+        if($product && $images)
+        {
+            if($request->hasFile('prod_img'))
+            {
+
+                $validate_img = Validator::make($request->all(),[
+                    'prod_img'=>['image']
+                ]);
+    
+                if($validate_img->fails())
+                {
+                  return response()->json(['error'=>$validate_img->errors()],401);
+                }
+                $this->unlink($path,$images);
+                $newimages = $request->file('prod_img');
+                foreach($newimages as $img)
+                {
+                    $image = new Images();          
+                    $imgName = time().$img->getClientOriginalName();
+                    $img->move(public_path('images/products'),$imgName);
+                    $image->img = $imgName; 
+                    $image->product_id = $product->id;
+                    $image->save(); 
+                }
+                $product->update(
+                    $validate->validated()
+                );
+            }
+            else{
+                $product->update(
+                    $validate->validated()
+                );
+                return response()->json([
+                    'msg'=>'product updated',
+                    'state'=>true,
+                    'data'=>$product
+                ], 200);
+            }
+        }else{
+            return response()->json([
+                'msg'=>'data not found',
+                'state'=>false
+            ], 400);
+        }
+    }
+    
 }

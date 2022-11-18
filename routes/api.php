@@ -28,10 +28,20 @@ Route::post('admin/login',[AdminAuthController::class,'login']);
 
 Route::middleware(['auth:admin-api','change_lang'])->prefix('admin')->group(function(){
     Route::resource('suppliers',SuppliersController::class);
+
+    Route::group(['prefix'=>'products'],function(){
+        Route::post('store',[ProductController::class,'create']);
+        Route::delete('delete/{id}',[ProductController::class,'delete']);
+        Route::post('update',[ProductController::class,'update']);
+    });
 });
 // Route::resource('category', CategoryController::class);
-Route::post('category/create',[CategoryController::class,'create']);
 
+
+// public routes //
+
+Route::post('category/create',[CategoryController::class,'create']);
+Route::get('products/show/{id}',[ProductController::class,'show']);
 Route::get('products/index',[ProductController::class,'index']);
-Route::post('products/store',[ProductController::class,'create']);
+
 require __DIR__ . '/client.php';
