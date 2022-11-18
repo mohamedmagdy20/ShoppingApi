@@ -28,6 +28,7 @@ Route::post('admin/login',[AdminAuthController::class,'login']);
 
 Route::middleware(['auth:admin-api','change_lang'])->prefix('admin')->group(function(){
     Route::resource('suppliers',SuppliersController::class);
+    Route::post('category/create',[CategoryController::class,'create']);
 
     Route::group(['prefix'=>'products'],function(){
         Route::post('store',[ProductController::class,'create']);
@@ -39,8 +40,7 @@ Route::middleware(['auth:admin-api','change_lang'])->prefix('admin')->group(func
 
 
 // public routes //
-
-Route::post('category/create',[CategoryController::class,'create']);
+Route::get('category',[CategoryController::class,'index']);
 Route::get('products/show/{id}',[ProductController::class,'show']);
 Route::get('products/index',[ProductController::class,'index']);
 

@@ -7,7 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('client')->middleware(['auth:client-api','change_lang'])->group(function(){
-    Route::get('cart',[CartController::class,'index']);
+    Route::group(['prefix'=>'cart'],function(){
+        Route::get('index',[CartController::class,'index']);
+        Route::post('create',[CartController::class,'create']);
+        Route::delete('delete/{id}',[CartController::class,'delete']);
+        Route::post('update',[CartController::class,'update']);
+    });
+
 });
 Route::post('client/login',[ClientAuthController::class,'login']);
 
