@@ -29,12 +29,21 @@ class ProductController extends Controller
             'description_'.app()->getLocale(),
             'categories_id','suppliers_id','price_in','price_out'
         ]);
-       
-        return response()->json([
-            'products'=>$data,
-            'state'=>true,
-            'msg'=>'success'
-        ], 200);
+
+        if($data)
+        {
+            return response()->json([
+                'products'=>$data,
+                'state'=>true,
+                'msg'=>'success'
+            ], 200);
+        }else{
+            return response()->json([
+                'msg'=>'data not found',
+                'state'=>false
+            ], 400);
+        }
+        
     }
 
     public function show($id)
