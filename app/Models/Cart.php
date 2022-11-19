@@ -37,6 +37,14 @@ class Cart extends Model
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    public function totalprice()
+    {
+        return "asdasd";
+    //     return $this->product->sum(function($product){
+    //         return $this->stock * $product->price_out;
+    // });
+    }
+
 
 }
 

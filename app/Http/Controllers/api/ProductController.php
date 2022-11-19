@@ -46,6 +46,75 @@ class ProductController extends Controller
         
     }
 
+    public function productbyCategory($id)
+    {
+        $data = Product::query()->with(['category' => function ($query) {
+            $query->select('id', 'name_'.app()->getLocale().' as catName');
+        },
+        'supplier' => function ($query) {
+            $query->select('id', 'name as supName','img');
+        },
+        'images'=>function($query)
+        {
+            $query->select('id','img as prodImg','product_id');
+        }
+        ])->where('categories_id ',$id)->get([
+            'id',
+            'name_'.app()->getLocale(),
+            'description_'.app()->getLocale(),
+            'categories_id','suppliers_id','price_in','price_out'
+        ]);
+
+        if($data)
+        {
+            return response()->json([
+                'products'=>$data,
+                'state'=>true,
+                'msg'=>'success'
+            ], 200);
+        }else{
+            return response()->json([
+                'msg'=>'data not found',
+                'state'=>false
+            ], 400);
+        }
+        
+    }
+
+    public function productbySupplier($id)
+    {
+        $data = Product::query()->with(['category' => function ($query) {
+            $query->select('id', 'name_'.app()->getLocale().' as catName');
+        },
+        'supplier' => function ($query) {
+            $query->select('id', 'name as supName','img');
+        },
+        'images'=>function($query)
+        {
+            $query->select('id','img as prodImg','product_id');
+        }
+        ])->where('suppliers_id',$id)->get([
+            'id',
+            'name_'.app()->getLocale(),
+            'description_'.app()->getLocale(),
+            'categories_id','suppliers_id','price_in','price_out'
+        ]);
+
+        if($data)
+        {
+            return response()->json([
+                'products'=>$data,
+                'state'=>true,
+                'msg'=>'success'
+            ], 200);
+        }else{
+            return response()->json([
+                'msg'=>'data not found',
+                'state'=>false
+            ], 400);
+        }
+        
+    }
     public function show($id)
     {
         $product = Product::find($id);

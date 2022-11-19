@@ -13,7 +13,7 @@ Route::prefix('client')->middleware(['auth:client-api','change_lang'])->group(fu
         Route::delete('delete/{id}',[CartController::class,'delete']);
         Route::post('update',[CartController::class,'update']);
     });
-
+    Route::get('orders',[OrderController::class,'clientOrders']);
 });
 Route::post('client/login',[ClientAuthController::class,'login']);
 

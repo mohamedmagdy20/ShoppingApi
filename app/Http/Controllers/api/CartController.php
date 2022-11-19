@@ -11,19 +11,35 @@ use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
-    //
+
+    public function totalprice($carts)
+    {
+        $total =0;
+        foreach($carts as $cart)
+        {
+            $res =  $cart->stock * $cart->product->price_out;
+            $total+=$res;
+        }
+        return $total; 
+    }
 
     public function index(Request $request)
     {
-        // return auth()->user(->
+
         $data = Cart::with(['product'=>function($query){
             $query->with('images');
         },'client'])->where('client_id',auth()->user()->id)->get();
         if($data)
         {
+            $cartCount =  $data->count();
+
+            $total = $this->totalprice($data);
+
             return response()->json([
                'msg'=>'success',
                'data'=>$data,
+               'cartCount'=>$cartCount,
+               'total'=>$total,
                'state'=>true
             ], 200);
         }else{
