@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Orders;
 use App\Models\orderDetails;
-
+use Carbon\Carbon;
 class OrderController extends Controller
 {
     public function index()
@@ -95,5 +95,51 @@ class OrderController extends Controller
                 'state'=>false
             ], 400);
         }
+    }
+
+    // cencel if order pass less than one day 
+    public function cancelOrder(Request $request,$id)
+    {
+        // return Carbon::now();
+        $order = Orders::find($id);
+        $time =Carbon::parse($order->updated_at);  
+        $time_now = Carbon::now();
+        if($time->lt($time_now->addDays()))
+        {
+            // you could cencel order //
+            $order->update([
+                'state'=>'Canceled'
+            ]);
+            return response()->json([
+                'msg'=>'Order Cenceled',
+                'state'=>true,
+            ], 200);
+        }else{
+            return response()->json([
+                'msg'=>'You counld not cenceld order',
+                'state'=>true,
+            ], 400);
+        }
+        
+    }
+
+    public function approveOrder($id)
+    {
+        $order = Orders::find($id);
+        if($order)
+        {
+            $order->update([
+                'state'=>'Approved'
+            ]);
+            return response()->json([
+                'msg'=>'Order Apporved',
+                'state'=>true,
+            ], 200);
+        }else{
+            return response()->json([
+                'msg'=>'data no found',
+                'state'=>false
+            ], 400);
+        } 
     }
 }

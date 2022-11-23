@@ -54,6 +54,7 @@ Route::middleware(['auth:admin-api','change_lang'])->prefix('admin')->group(func
 
 
 // public routes //
+Route::get("orders/cencel/{id}",[OrderController::class,'cancelOrder']);
 Route::get('category',[CategoryController::class,'index']);
 Route::get('products/show/{id}',[ProductController::class,'show']);
 Route::get('products/index',[ProductController::class,'index']);
